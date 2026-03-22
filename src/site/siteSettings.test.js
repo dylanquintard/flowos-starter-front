@@ -54,3 +54,10 @@ test("mergeSiteSettings accepts the menu image visibility toggle", () => {
 
   expect(merged.order.showMenuProductImages).toBe(false);
 });
+
+test("mergeSiteSettings keeps local SEO pages disabled by default", () => {
+  const merged = mergeSiteSettings({});
+
+  expect(merged.seo.localPages.enabled).toBe(false);
+  expect(merged.seo.localPages.items).toEqual([]);
+});

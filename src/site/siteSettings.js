@@ -42,6 +42,10 @@ export const DEFAULT_SITE_SETTINGS = Object.freeze({
     headerLogoUrl: "",
     faviconUrl: "",
     canonicalSiteUrl: "",
+    localPages: {
+      enabled: false,
+      items: [],
+    },
   },
   home: {
     heroTitle: {
@@ -182,6 +186,43 @@ function mergeLocalizedValue(defaultValue, nextValue) {
   };
 }
 
+function slugifyLocalPage(value) {
+  return String(value || "")
+    .trim()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .replace(/[^a-z0-9-]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+}
+
+function mergeLocalPages(defaultValue, nextValue) {
+  const source = isPlainObject(nextValue) ? nextValue : {};
+  const items = Array.isArray(source.items) ? source.items : defaultValue?.items || [];
+  const itemsBySlug = new Map();
+
+  for (const rawItem of items) {
+    if (!isPlainObject(rawItem)) continue;
+    const slug = slugifyLocalPage(rawItem.slug);
+    if (!slug) continue;
+
+    itemsBySlug.set(slug, {
+      slug,
+      enabled: Boolean(rawItem.enabled),
+      title: mergeLocalizedValue({ fr: "", en: "" }, rawItem.title),
+      intro: mergeLocalizedValue({ fr: "", en: "" }, rawItem.intro),
+    });
+  }
+
+  return {
+    enabled:
+      typeof source.enabled === "boolean"
+        ? source.enabled
+        : Boolean(defaultValue?.enabled),
+    items: [...itemsBySlug.values()].sort((left, right) => left.slug.localeCompare(right.slug)),
+  };
+}
+
 export function mergeSiteSettings(nextValue) {
   const defaults = cloneDefaults();
   const source = isPlainObject(nextValue) ? nextValue : {};
@@ -254,6 +295,7 @@ export function mergeSiteSettings(nextValue) {
         typeof source.seo?.canonicalSiteUrl === "string"
           ? sanitizeAbsoluteHttpUrl(source.seo.canonicalSiteUrl)
           : defaults.seo.canonicalSiteUrl,
+      localPages: mergeLocalPages(defaults.seo.localPages, source.seo?.localPages),
     },
     home: {
       heroTitle: mergeLocalizedValue(defaults.home.heroTitle, source.home?.heroTitle),

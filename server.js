@@ -31,6 +31,10 @@ const DEFAULT_SITE_SETTINGS = Object.freeze({
     defaultOgImageUrl: "",
     faviconUrl: "",
     canonicalSiteUrl: "",
+    localPages: {
+      enabled: false,
+      items: [],
+    },
   },
   blog: {
     introTitle: {
@@ -275,6 +279,18 @@ function getLocalizedValue(value, fallback = "") {
 
 function normalizeSiteSettings(payload) {
   const source = payload && typeof payload === "object" ? payload : {};
+  const localPages = (Array.isArray(source.seo?.localPages?.items) ? source.seo.localPages.items : [])
+    .map((item) => {
+      const slug = slugify(item?.slug);
+      if (!slug) return null;
+      return {
+        slug,
+        enabled: Boolean(item?.enabled),
+        title: { fr: getLocalizedValue(item?.title, "") },
+        intro: { fr: getLocalizedValue(item?.intro, "") },
+      };
+    })
+    .filter(Boolean);
 
   return {
     siteName: String(source.siteName || "").trim() || DEFAULT_SITE_SETTINGS.siteName,
@@ -300,6 +316,13 @@ function normalizeSiteSettings(payload) {
       canonicalSiteUrl:
         String(source.seo?.canonicalSiteUrl || "").trim() ||
         DEFAULT_SITE_SETTINGS.seo.canonicalSiteUrl,
+      localPages: {
+        enabled:
+          typeof source.seo?.localPages?.enabled === "boolean"
+            ? source.seo.localPages.enabled
+            : DEFAULT_SITE_SETTINGS.seo.localPages.enabled,
+        items: localPages,
+      },
     },
     blog: {
       introTitle: {
@@ -333,6 +356,21 @@ function normalizeSiteSettings(payload) {
       tiktokUrl: String(source.social?.tiktokUrl || "").trim(),
     },
   };
+}
+
+function getPublishedLocalSeoPages(settings) {
+  const normalized = normalizeSiteSettings(settings);
+  if (!normalized.seo?.localPages?.enabled) return [];
+
+  return (Array.isArray(normalized.seo.localPages.items) ? normalized.seo.localPages.items : []).filter(
+    (item) =>
+      Boolean(
+        item?.enabled &&
+          item?.slug &&
+          getLocalizedValue(item?.title, "") &&
+          getLocalizedValue(item?.intro, "")
+      )
+  );
 }
 
 function normalizeSeoLocationCatalog(payload) {
@@ -586,10 +624,9 @@ function buildLocalSitemapUrls(req, cache) {
     routes.add(normalizeRoutePath(staticPath));
   }
 
-  const citySlugs = cache?.citySlugs instanceof Set ? [...cache.citySlugs] : [];
-  for (const slug of citySlugs) {
-    if (!slug || FIXED_CITY_SLUGS.has(slug) || BLOCKED_CITY_SLUGS.has(slug)) continue;
-    routes.add(`/pizza-${slug}`);
+  const localSeoPages = getPublishedLocalSeoPages(settings);
+  for (const page of localSeoPages) {
+    routes.add(`/pizza-${page.slug}`);
   }
 
   const blogSlugs = cache?.blogSlugs instanceof Set ? [...cache.blogSlugs] : [];
@@ -714,12 +751,13 @@ function buildSeoMeta(pathname, cache) {
   const pizzaDashMatch = /^\/pizza-([a-z0-9-]+)$/.exec(pathname);
   if (pizzaDashMatch) {
     const slug = slugify(pizzaDashMatch[1]);
-    if (!cache.citySlugs.has(slug)) return null;
-    const city = cache.cityLabelsBySlug.get(slug) || titleizeSlug(slug);
+    const localPage = getPublishedLocalSeoPages(settings).find((entry) => entry.slug === slug);
+    if (!localPage) return null;
+    const city = getLocalizedValue(localPage.title, titleizeSlug(slug));
+    const intro = getLocalizedValue(localPage.intro, "");
     return {
-      title: `Pizza napolitaine ${city} | ${siteName}`,
-      description:
-        `Pizza napolitaine artisanale ${city}: ingredients italiens, cuisson au four a bois et gaz, service a emporter.`,
+      title: city,
+      description: intro || `Decouvrez la page locale de ${siteName}.`,
       robots: "index,follow",
       ogType: "website",
       pathname,

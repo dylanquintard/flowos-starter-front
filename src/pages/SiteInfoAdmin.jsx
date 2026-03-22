@@ -193,6 +193,16 @@ function normalizeLocalizedValue(value) {
   };
 }
 
+function slugifyLocalSeoPage(value) {
+  return String(value || "")
+    .trim()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .replace(/[^a-z0-9-]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+}
+
 function HighlightedIngredientsManager({
   items,
   pendingValue,
@@ -394,6 +404,11 @@ export default function SiteInfoAdmin() {
     [form.pizzaPage?.featuredProductIds]
   );
   const selectableProducts = useMemo(() => availableProducts, [availableProducts]);
+  const localSeoPages = useMemo(
+    () =>
+      Array.isArray(form.seo?.localPages?.items) ? form.seo.localPages.items : [],
+    [form.seo?.localPages?.items]
+  );
 
   const updateRootField = (field, value) => {
     setForm((prev) => ({
@@ -433,6 +448,77 @@ export default function SiteInfoAdmin() {
         },
       },
     }));
+  };
+
+  const setLocalSeoPages = (updater) => {
+    setForm((prev) => {
+      const currentItems = Array.isArray(prev.seo?.localPages?.items)
+        ? prev.seo.localPages.items
+        : [];
+      const nextItems =
+        typeof updater === "function" ? updater(currentItems) : Array.isArray(updater) ? updater : currentItems;
+
+      return {
+        ...prev,
+        seo: {
+          ...prev.seo,
+          localPages: {
+            enabled: Boolean(prev.seo?.localPages?.enabled),
+            items: nextItems,
+          },
+        },
+      };
+    });
+  };
+
+  const updateLocalSeoPagesEnabled = (enabled) => {
+    setForm((prev) => ({
+      ...prev,
+      seo: {
+        ...prev.seo,
+        localPages: {
+          enabled: Boolean(enabled),
+          items: Array.isArray(prev.seo?.localPages?.items) ? prev.seo.localPages.items : [],
+        },
+      },
+    }));
+  };
+
+  const addLocalSeoPage = () => {
+    setLocalSeoPages((currentItems) => {
+      const nextIndex = currentItems.length + 1;
+      const nextSlug = slugifyLocalSeoPage(`zone-locale-${nextIndex}`);
+      return [
+        ...currentItems,
+        {
+          slug: nextSlug,
+          enabled: false,
+          title: { fr: "", en: "" },
+          intro: { fr: "", en: "" },
+        },
+      ];
+    });
+  };
+
+  const removeLocalSeoPage = (slugToRemove) => {
+    setLocalSeoPages((currentItems) =>
+      currentItems.filter((item) => String(item?.slug || "") !== String(slugToRemove || ""))
+    );
+  };
+
+  const updateLocalSeoPage = (slugToUpdate, updater) => {
+    setLocalSeoPages((currentItems) =>
+      currentItems.map((item) => {
+        if (String(item?.slug || "") !== String(slugToUpdate || "")) return item;
+        const nextItem = typeof updater === "function" ? updater(item) : item;
+        return {
+          slug: slugifyLocalSeoPage(nextItem.slug || item.slug),
+          enabled: Boolean(nextItem.enabled),
+          title: normalizeLocalizedValue(nextItem.title),
+          intro: normalizeLocalizedValue(nextItem.intro),
+        };
+      })
+    );
   };
 
   const updateHighlightedIngredients = (nextFrenchItems, nextEnglishItems) => {
@@ -568,6 +654,20 @@ export default function SiteInfoAdmin() {
             canonicalSiteUrl: form.seo.canonicalSiteUrl,
           },
         };
+      case "localSeo":
+        return {
+          seo: {
+            localPages: {
+              enabled: Boolean(form.seo?.localPages?.enabled),
+              items: localSeoPages.map((item) => ({
+                slug: slugifyLocalSeoPage(item.slug),
+                enabled: Boolean(item.enabled),
+                title: normalizeLocalizedValue(item.title),
+                intro: normalizeLocalizedValue(item.intro),
+              })),
+            },
+          },
+        };
       case "home":
         return {
           home: {
@@ -669,6 +769,9 @@ export default function SiteInfoAdmin() {
           };
           break;
         }
+        case "localSeo":
+          payload = getSectionPayload("localSeo");
+          break;
         case "home":
           payload = getSectionPayload("home");
           break;
@@ -1234,6 +1337,147 @@ export default function SiteInfoAdmin() {
                 tr={tr}
               />
             </div>
+          </div>
+        </AccordionSection>
+
+        <AccordionSection
+          sectionRef={(node) => {
+            sectionRefs.current.localSeo = node;
+          }}
+          eyebrow={tr("SEO local", "Local SEO")}
+          title={tr("Pages SEO locales dynamiques", "Dynamic local SEO pages")}
+          description={tr(
+            "Desactivees par defaut. Une page est publiee seulement si elle est remplie et activee ici.",
+            "Disabled by default. A page is published only when it is filled in and activated here."
+          )}
+          isOpen={openSectionId === "localSeo"}
+          onToggle={() => toggleSection("localSeo")}
+          onSave={() => saveSection("localSeo")}
+          saving={savingSectionId === "localSeo"}
+          translating={false}
+          saveLabel={saveButtonLabel}
+        >
+          <div className="grid gap-4">
+            <label className="inline-flex items-center gap-3 rounded-2xl border border-white/10 bg-black/20 px-4 py-3 text-sm text-stone-100">
+              <input
+                type="checkbox"
+                checked={Boolean(form.seo?.localPages?.enabled)}
+                onChange={(event) => updateLocalSeoPagesEnabled(event.target.checked)}
+              />
+              <span>
+                {tr(
+                  "Activer les pages SEO locales",
+                  "Enable local SEO pages"
+                )}
+              </span>
+            </label>
+
+            <div className="rounded-2xl border border-white/10 bg-black/10 p-4 text-sm text-stone-300">
+              {tr(
+                "Chaque page utilise un slug, un titre et un paragraphe d introduction. Le sitemap et la mise en ligne suivent automatiquement uniquement les pages actives et remplies.",
+                "Each page uses a slug, a title and an intro paragraph. Sitemap publication and public availability automatically follow only active and filled pages."
+              )}
+            </div>
+
+            <div className="flex flex-wrap gap-3">
+              <button
+                type="button"
+                onClick={addLocalSeoPage}
+                className="rounded-full border border-white/20 bg-black/20 px-5 py-3 text-xs font-semibold uppercase tracking-wide text-white transition hover:bg-white/10"
+              >
+                {tr("Ajouter une page locale", "Add local page")}
+              </button>
+            </div>
+
+            {localSeoPages.length === 0 ? (
+              <div className="rounded-2xl border border-dashed border-white/15 bg-black/10 px-4 py-4 text-sm text-stone-400">
+                {tr(
+                  "Aucune page locale configuree pour le moment.",
+                  "No local page configured yet."
+                )}
+              </div>
+            ) : (
+              <div className="grid gap-4">
+                {localSeoPages.map((item, index) => (
+                  <div
+                    key={item.slug || index}
+                    className="rounded-[1.5rem] border border-white/10 bg-black/20 p-4"
+                  >
+                    <div className="flex flex-wrap items-center justify-between gap-3">
+                      <p className="text-xs uppercase tracking-[0.2em] text-saffron">
+                        {tr("Page locale", "Local page")} #{index + 1}
+                      </p>
+                      <button
+                        type="button"
+                        onClick={() => removeLocalSeoPage(item.slug)}
+                        className="rounded-full border border-red-300/30 bg-red-500/10 px-4 py-2 text-[11px] font-semibold uppercase tracking-wide text-red-100 transition hover:bg-red-500/20"
+                      >
+                        {tr("Supprimer", "Remove")}
+                      </button>
+                    </div>
+
+                    <div className="mt-4 grid gap-4 lg:grid-cols-[220px_1fr]">
+                      <label className="grid gap-1 text-xs text-stone-300">
+                        <span>Slug</span>
+                        <input
+                          value={item.slug}
+                          onChange={(event) =>
+                            updateLocalSeoPage(item.slug, (current) => ({
+                              ...current,
+                              slug: event.target.value,
+                            }))
+                          }
+                          className="rounded-2xl border border-white/15 bg-charcoal/70 px-4 py-3 text-sm text-white"
+                        />
+                      </label>
+                      <label className="inline-flex items-center gap-3 rounded-2xl border border-white/10 bg-charcoal/35 px-4 py-3 text-sm text-stone-100">
+                        <input
+                          type="checkbox"
+                          checked={Boolean(item.enabled)}
+                          onChange={(event) =>
+                            updateLocalSeoPage(item.slug, (current) => ({
+                              ...current,
+                              enabled: event.target.checked,
+                            }))
+                          }
+                        />
+                        <span>{tr("Publier cette page", "Publish this page")}</span>
+                      </label>
+                    </div>
+
+                    <div className="mt-4 grid gap-4">
+                      <LocalizedField
+                        label={tr("Titre de page", "Page title")}
+                        value={normalizeLocalizedValue(item.title)}
+                        onChange={(locale, value) =>
+                          updateLocalSeoPage(item.slug, (current) => ({
+                            ...current,
+                            title: {
+                              ...normalizeLocalizedValue(current.title),
+                              [locale]: value,
+                            },
+                          }))
+                        }
+                      />
+                      <LocalizedField
+                        label={tr("Paragraphe d introduction", "Intro paragraph")}
+                        value={normalizeLocalizedValue(item.intro)}
+                        multiline
+                        onChange={(locale, value) =>
+                          updateLocalSeoPage(item.slug, (current) => ({
+                            ...current,
+                            intro: {
+                              ...normalizeLocalizedValue(current.intro),
+                              [locale]: value,
+                            },
+                          }))
+                        }
+                      />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         </AccordionSection>
 
