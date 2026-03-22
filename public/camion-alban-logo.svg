@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="640" height="160" viewBox="0 0 640 160" role="img" aria-labelledby="title desc">
+  <title id="title">Camion Pizza Alban</title>
+  <desc id="desc">Logo local de demonstration pour le tenant Camion Pizza Alban.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#2f130d"/>
+      <stop offset="100%" stop-color="#7a2e1a"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#ffd166"/>
+      <stop offset="100%" stop-color="#f79d3c"/>
+    </linearGradient>
+  </defs>
+  <rect width="640" height="160" rx="28" fill="url(#bg)"/>
+  <g transform="translate(28 24)">
+    <rect width="112" height="112" rx="24" fill="#fff4db" opacity="0.96"/>
+    <path d="M23 78h64l-6 16H29z" fill="#7a2e1a"/>
+    <path d="M28 73c0-19 15-34 34-34s34 15 34 34" fill="none" stroke="#c6492d" stroke-width="12" stroke-linecap="round"/>
+    <circle cx="43" cy="58" r="5" fill="#2f8f55"/>
+    <circle cx="68" cy="49" r="5" fill="#ffd166"/>
+    <circle cx="79" cy="65" r="5" fill="#2f8f55"/>
+    <rect x="34" y="80" width="12" height="18" rx="4" fill="#7a2e1a"/>
+    <rect x="64" y="80" width="12" height="18" rx="4" fill="#7a2e1a"/>
+  </g>
+  <g transform="translate(168 44)">
+    <text x="0" y="34" font-family="Segoe UI, Arial, sans-serif" font-size="18" font-weight="700" letter-spacing="3" fill="#ffd8b0">TENANT PILOTE</text>
+    <text x="0" y="78" font-family="Segoe UI, Arial, sans-serif" font-size="48" font-weight="800" fill="#fff9f0">Camion Pizza</text>
+    <rect x="0" y="92" width="204" height="6" rx="3" fill="url(#accent)"/>
+    <text x="0" y="124" font-family="Segoe UI, Arial, sans-serif" font-size="22" font-weight="600" fill="#ffe8c9">Alban ANDRE</text>
+  </g>
+</svg>

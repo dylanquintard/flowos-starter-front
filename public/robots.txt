@@ -1,0 +1,9 @@
+# https://www.robotstxt.org/robotstxt.html
+User-agent: *
+Disallow: /admin
+Disallow: /login
+Disallow: /register
+Disallow: /order
+Disallow: /profile
+Disallow: /userorders
+Sitemap: https://example.com/sitemap.xml
