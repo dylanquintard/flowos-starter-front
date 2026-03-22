@@ -409,6 +409,16 @@ export default function SiteInfoAdmin() {
       Array.isArray(form.seo?.localPages?.items) ? form.seo.localPages.items : [],
     [form.seo?.localPages?.items]
   );
+  const localSeoBaseUrl = useMemo(() => {
+    const configured = String(form.seo?.canonicalSiteUrl || publicSettings?.seo?.canonicalSiteUrl || "").trim();
+    if (configured) {
+      return configured.replace(/\/+$/, "");
+    }
+    if (typeof window !== "undefined") {
+      return window.location.origin;
+    }
+    return "";
+  }, [form.seo?.canonicalSiteUrl, publicSettings?.seo?.canonicalSiteUrl]);
 
   const updateRootField = (field, value) => {
     setForm((prev) => ({
@@ -1443,6 +1453,26 @@ export default function SiteInfoAdmin() {
                         />
                         <span>{tr("Publier cette page", "Publish this page")}</span>
                       </label>
+                    </div>
+
+                    <div className="rounded-2xl border border-white/10 bg-charcoal/35 px-4 py-3 text-xs text-stone-300">
+                      <p>
+                        {tr("URL finale", "Final URL")} :{" "}
+                        <span className="font-semibold text-white">
+                          {localSeoBaseUrl ? `${localSeoBaseUrl}/pizza-${item.slug || ""}` : `/pizza-${item.slug || ""}`}
+                        </span>
+                      </p>
+                      <p className="mt-2">
+                        {Boolean(form.seo?.localPages?.enabled) && Boolean(item.enabled)
+                          ? tr(
+                              "Cette page sera indexable si le titre et le paragraphe sont remplis.",
+                              "This page will be indexable when title and intro are filled."
+                            )
+                          : tr(
+                              "Active d abord le bloc global et la page elle-meme pour la mettre en ligne et l ajouter au sitemap.",
+                              "Enable the global block and the page itself before it goes live and appears in the sitemap."
+                            )}
+                      </p>
                     </div>
 
                     <div className="mt-4 grid gap-4">
