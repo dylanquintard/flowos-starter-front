@@ -636,19 +636,19 @@ function buildSeoMeta(pathname, cache) {
     "/gallery": {
       title: `Galerie | ${siteName}`,
       description:
-        "Photos du camion pizza, des cuissons et des pizzas napolitaines servies en Moselle.",
+        "Photos du site, des produits, des coulisses et des visuels de marque.",
       image: defaultImage,
     },
     "/menu": {
       title: `Menu | ${siteName}`,
       description:
-        `Consultez la carte ${siteName}: pizzas napolitaines artisanales, ingredients italiens et cuisson au four a bois et gaz.`,
+        `Consultez la carte ${siteName}: produits, categories, descriptions et tarifs de votre offre.`,
       image: defaultImage,
     },
     "/planing": {
       title: `Horaires | ${siteName}`,
       description:
-        "Retrouvez les horaires d'ouvertures, emplacements et deplacements du camion pizza napolitain.",
+        "Retrouvez les horaires, emplacements ou modalites de service publies pour votre activite.",
       image: defaultImage,
     },
     "/a-propos": {
@@ -667,7 +667,7 @@ function buildSeoMeta(pathname, cache) {
       title: `Blog | ${siteName}`,
       description:
         blogIntroText ||
-        `Articles ${siteName}: pizza napolitaine, cuisson, ingredients italiens et savoir-faire artisanal.`,
+        `Articles ${siteName}: actualites, coulisses, savoir-faire et contenus de marque.`,
       image: defaultImage,
     },
     "/mentions-legales": {
@@ -683,12 +683,6 @@ function buildSeoMeta(pathname, cache) {
     "/conditions-generales": {
       title: `Conditions d'utilisation | ${siteName}`,
       description: `Conditions d'utilisation du site ${siteName}.`,
-      image: defaultImage,
-    },
-    "/camion-pizza-moselle": {
-      title: `Camion pizza en Moselle | ${siteName}`,
-      description:
-        "Camion pizza en Moselle: carte courte, cuisson vive et passages hebdomadaires dans les communes voisines.",
       image: defaultImage,
     },
   };
@@ -990,12 +984,6 @@ app.use(async (req, res) => {
     const queryIndex = req.url.indexOf("?");
     const search = queryIndex >= 0 ? req.url.slice(queryIndex) : "";
     return res.redirect(301, `${normalizedPath}${search}`);
-  }
-
-  if (pathname === "/food-truck-pizza-moselle") {
-    const queryIndex = req.url.indexOf("?");
-    const search = queryIndex >= 0 ? req.url.slice(queryIndex) : "";
-    return res.redirect(301, `/camion-pizza-moselle${search}`);
   }
 
   const legacyBlogMatch = /^\/blog\/([a-z0-9-]+)$/.exec(pathname.toLowerCase());

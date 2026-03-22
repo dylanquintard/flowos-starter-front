@@ -9,7 +9,7 @@ import { DEFAULT_SITE_SETTINGS } from "../site/siteSettings";
 export default function LocalSeoPage({ cityKey }) {
   const { settings } = useSiteSettings();
   const content = LOCAL_PAGE_CONTENT[cityKey] || LOCAL_PAGE_CONTENT.moselle;
-  const cityLabel = cityKey === "moselle" ? "Moselle" : "Thionville";
+  const cityLabel = cityKey === "moselle" ? "Zone locale" : "Zone locale secondaire";
   const siteName = settings.siteName || DEFAULT_SITE_SETTINGS.siteName;
   const canonicalSiteUrl = String(settings.seo?.canonicalSiteUrl || "").trim();
   const localJsonLd = [
@@ -29,16 +29,16 @@ export default function LocalSeoPage({ cityKey }) {
         settings.social?.facebookUrl,
         settings.social?.tiktokUrl,
       ],
-      areaServed: [cityLabel, "Moselle"],
+      areaServed: [cityLabel, "Zone de service"],
     }),
-        buildBreadcrumbJsonLd(
-          [
-            { name: "Accueil", path: "/" },
-            { name: "Horaires", path: "/planing" },
-            { name: cityLabel, path: content.pathname },
-          ],
-          canonicalSiteUrl || undefined
-        ),
+    buildBreadcrumbJsonLd(
+      [
+        { name: "Accueil", path: "/" },
+        { name: "Horaires", path: "/planing" },
+        { name: cityLabel, path: content.pathname },
+      ],
+      canonicalSiteUrl || undefined
+    ),
   ].filter(Boolean);
 
   return (
@@ -69,31 +69,31 @@ export default function LocalSeoPage({ cityKey }) {
 
       <div className="space-y-3">
         <p className="text-sm font-semibold text-saffron">
-          Le camion n&apos;est pas disponible en permanence dans cette ville.{" "}
+          Cette page locale est fournie comme base de demonstration.{" "}
           <Link to="/planing" className="underline decoration-saffron underline-offset-2">
-            Horaires & déplacements du camion
+            Horaires et disponibilites
           </Link>
         </p>
         <PageFaqSection
           pathname={content.pathname}
-          title={`Questions fréquentes sur ${cityLabel}`}
+          title={`Questions frequentes sur ${cityLabel}`}
         />
       </div>
 
       <section className="glass-panel p-6">
-        <h2 className="text-lg font-bold text-white">Commander votre pizza</h2>
+        <h2 className="text-lg font-bold text-white">Decouvrir l offre</h2>
         <div className="mt-4 flex flex-wrap gap-2">
           <Link
             to="/menu"
             className="rounded-full bg-saffron px-4 py-2 text-xs font-bold uppercase tracking-wide text-charcoal transition hover:bg-yellow-300"
           >
-            Voir le menu des pizzas
+            Voir le menu
           </Link>
           <Link
             to="/planing"
             className="rounded-full border border-white/30 px-4 py-2 text-xs font-semibold text-white transition hover:bg-white/10"
           >
-            Consulter les horaires d'ouvertures du camion pizza
+            Consulter les horaires et disponibilites
           </Link>
         </div>
       </section>

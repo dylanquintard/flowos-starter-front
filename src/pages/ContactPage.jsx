@@ -14,8 +14,8 @@ export default function ContactPage() {
     settings.siteDescription,
     language,
     tr(
-      "Pizza napolitaine au feu de bois en Moselle. Commande en ligne et retrait rapide.",
-      "Wood-fired Neapolitan pizza in Moselle. Online ordering and quick pickup."
+      "Starter Flow-OS pour restaurant, food truck ou concept local. Personnalisez le contenu, les horaires et le menu selon votre activite.",
+      "Flow-OS starter for restaurants, food trucks or local concepts. Customize content, opening hours and menu to match your business."
     )
   );
   const contactPageTitle = getLocalizedSiteText(
@@ -65,7 +65,7 @@ export default function ContactPage() {
         getLocalizedSiteText(
           settings.contact?.serviceArea,
           language,
-          tr("Moselle", "Moselle")
+          tr("Zone de service", "Service area")
         ),
       ],
     }),

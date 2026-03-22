@@ -6,10 +6,8 @@ import PageFaqSection from "../components/common/PageFaqSection";
 import { useLanguage } from "../context/LanguageContext";
 import { useSiteSettings } from "../context/SiteSettingsContext";
 import { buildBaseFoodEstablishmentJsonLd } from "../seo/jsonLd";
-import { getCityPath } from "../seo/localLandingContent";
 import { DEFAULT_SITE_SETTINGS } from "../site/siteSettings";
 import { getLocationDisplayName } from "../utils/location";
-import { Link } from "react-router-dom";
 
 const DAY_LABELS = {
   MONDAY: { fr: "Lundi", en: "Monday" },
@@ -211,8 +209,8 @@ export default function TourneeCamion() {
     `Horaires | ${siteName}`
   );
   const description = tr(
-    "Retrouvez les emplacements du camion pizza napolitaine en Moselle et autour de Thionville, avec horaires de passage hebdomadaires.",
-    "Find the Neapolitan pizza truck locations in Moselle and around Thionville, with weekly service hours."
+    "Retrouvez les horaires, emplacements ou modalites de service publies pour votre activite.",
+    "Find the opening hours, locations or service details published for your business."
   );
 
   return (
@@ -230,25 +228,25 @@ export default function TourneeCamion() {
 
       <header className="space-y-3">
         <p className="text-xs uppercase tracking-[0.25em] text-saffron">
-          {tr("Horaires d'ouverture du camion", "Truck opening hours")}
+          {tr("Horaires et disponibilites", "Opening hours and availability")}
         </p>
         <h1 className="font-display text-4xl uppercase tracking-wide text-white sm:text-5xl">
           {tr(
-            "Horaires d'ouverture du camion pizza napolitaine",
-            "Opening hours for the Neapolitan pizza truck"
+            "Horaires d ouverture et disponibilites",
+            "Opening hours and availability"
           )}
         </h1>
         <p className="max-w-3xl text-sm text-stone-300 sm:text-base">
           {tr(
-            "Retrouvez les emplacements et horaires du camion pizza napolitaine en Moselle et autour de Thionville.",
-            "Find the locations and opening hours of the Neapolitan pizza truck in Moselle and around Thionville."
+            "Retrouvez les lieux, horaires et points de contact publies pour votre activite.",
+            "Find the locations, opening hours and contact points published for your business."
           )}
         </p>
       </header>
 
       <section className="glass-panel p-6">
         <h2 className="font-display text-3xl uppercase tracking-wide text-white">
-          {tr("Emplacements du camion pizza", "Pizza truck locations")}
+          {tr("Lieux et zones de service", "Locations and service areas")}
         </h2>
         <div className="mt-4 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
           {scheduleByLocation.length === 0 ? (
@@ -298,26 +296,7 @@ export default function TourneeCamion() {
             ))
           )}
         </div>
-        {visibleCities.length > 0 && (
-          <ul className="mt-6 flex flex-wrap gap-2">
-            {visibleCities
-              .map((city) => ({
-                city,
-                path: getCityPath(city),
-              }))
-              .filter((entry) => entry.path)
-              .map((entry) => (
-              <li key={entry.city}>
-                <Link
-                  to={entry.path}
-                  className="inline-flex rounded-full border border-white/20 px-3 py-1 text-xs text-stone-200 transition hover:border-saffron/70 hover:text-saffron"
-                >
-                  {entry.city}
-                </Link>
-              </li>
-            ))}
-          </ul>
-        )}
+        {visibleCities.length > 0 ? null : null}
       </section>
 
       <PageFaqSection

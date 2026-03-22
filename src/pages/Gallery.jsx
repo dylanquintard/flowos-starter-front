@@ -13,8 +13,8 @@ export default function Gallery() {
   const siteName = settings.siteName || DEFAULT_SITE_SETTINGS.siteName;
   const title = tr(`Galerie | ${siteName}`, `Gallery | ${siteName}`);
   const description = tr(
-    "Galerie photo du camion pizza, du four et des pizzas artisanales.",
-    "Photo gallery of the pizza truck, oven and handmade pizzas."
+    "Galerie photo du site, des produits, des coulisses et des visuels de marque.",
+    "Photo gallery for the website, products, behind-the-scenes and brand visuals."
   );
 
   useEffect(() => {

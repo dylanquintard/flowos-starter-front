@@ -404,24 +404,24 @@ const truckTourSchedule = useMemo(
     siteSettings.seo?.defaultMetaTitle,
     language,
     tr(
-      `Pizza napolitaine au feu de bois en Moselle | ${siteName}`,
-      `Wood-fired Neapolitan pizza in Moselle | ${siteName}`
+      `Site vitrine et commandes locales | ${siteName}`,
+      `Showcase website and local ordering | ${siteName}`
     )
   );
   const siteMetaDescription = getLocalizedSiteText(
     siteSettings.seo?.defaultMetaDescription,
     language,
     tr(
-      "Pizza napolitaine au feu de bois en Moselle. Commande en ligne et retrait rapide.",
-      "Wood-fired Neapolitan pizza in Moselle. Online ordering and quick pickup."
+      "Starter Flow-OS pour restaurant, food truck ou concept local. Personnalisez le contenu, les horaires et le menu selon votre activite.",
+      "Flow-OS starter for restaurants, food trucks or local concepts. Customize content, opening hours and menu to match your business."
     )
   );
   const heroTitle = getLocalizedSiteText(
     siteSettings.home?.heroTitle,
     language,
     tr(
-      "Pizza napolitaine au feu de bois en Moselle",
-      "Wood-fired Neapolitan pizza in Moselle"
+      "Un site Flow-OS pret a personnaliser",
+      "A Flow-OS site ready to customize"
     )
   );
   const heroSubtitle = getLocalizedSiteText(

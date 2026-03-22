@@ -97,10 +97,15 @@ export default function Menu() {
   if (products.length === 0) {
     return (
       <div className="section-shell py-12">
-        <p className="rounded-2xl border border-white/15 bg-white/5 px-4 py-3 text-sm text-stone-300">{tr("Aucun plat disponible.", "No dish available.")}</p>
+        <p className="rounded-2xl border border-white/15 bg-white/5 px-4 py-3 text-sm text-stone-300">{tr("Aucun produit disponible.", "No product available.")}</p>
       </div>
     );
   }
+
+  const menuDescription = tr(
+    `Consultez le menu de ${siteName}. Produits, categories, descriptions et tarifs de votre offre.`,
+    `Browse ${siteName}'s menu. Products, categories, descriptions and pricing for your offer.`
+  );
 
   return (
     <div className="section-shell space-y-10 pb-20 pt-12 sm:pt-14">
@@ -109,33 +114,25 @@ export default function Menu() {
           `Menu | ${siteName}`,
           `Menu | ${siteName}`
         )}
-        description={tr(
-          `Consultez le menu pizza napolitaine artisanal de ${siteName} en Moselle. Recettes, ingredients et prix.`,
-          `Browse ${siteName}'s handmade Neapolitan pizza menu in Moselle. Recipes, ingredients and prices.`
-        )}
+        description={menuDescription}
         pathname="/menu"
         jsonLd={buildBaseFoodEstablishmentJsonLd({
           pagePath: "/menu",
-          pageName: tr("Menu pizza napolitaine", "Neapolitan pizza menu"),
-          description: tr(
-            `Consultez le menu pizza napolitaine artisanal de ${siteName} en Moselle. Recettes, ingredients et prix.`,
-            `Browse ${siteName}'s handmade Neapolitan pizza menu in Moselle. Recipes, ingredients and prices.`
-          ),
+          pageName: tr("Menu", "Menu"),
+          description: menuDescription,
           siteName,
         })}
       />
       <header className="space-y-3 text-center">
-        <p className="text-xs uppercase tracking-[0.35em] text-saffron">{tr("Menu restaurant", "Restaurant menu")}</p>
+        <p className="text-xs uppercase tracking-[0.35em] text-saffron">{tr("Menu", "Menu")}</p>
         <h1 className="font-display text-5xl uppercase tracking-[0.08em] text-white sm:text-6xl">{tr("Notre carte", "Our menu")}</h1>
         <p className="mx-auto max-w-2xl text-sm text-stone-300 sm:text-base">
           {tr(
-            "Pizzas au four a bois et produits frais, présentes comme une vraie carte de restaurant.",
-            "Wood-fired pizzas and fresh products, displayed like a real restaurant menu."
+            "Personnalisez cette carte avec vos produits, vos categories et votre positionnement.",
+            "Customize this menu with your own products, categories and positioning."
           )}
         </p>
       </header>
-
-      <h2 className="sr-only">{tr("Catégories du menu", "Menu categories")}</h2>
 
       {featuredProducts.length > 0 ? (
         <section className="space-y-2">
@@ -152,12 +149,12 @@ export default function Menu() {
         tr={tr}
         variant="default"
         showProductImages={showMenuProductImages}
-        emptyMessage={tr("Aucun plat disponible.", "No dish available.")}
+        emptyMessage={tr("Aucun produit disponible.", "No product available.")}
       />
 
       <PageFaqSection
         pathname="/menu"
-        title={tr("Questions fréquentes sur le menu", "Frequently asked questions about the menu")}
+        title={tr("Questions frequentes sur le menu", "Frequently asked questions about the menu")}
       />
     </div>
   );
